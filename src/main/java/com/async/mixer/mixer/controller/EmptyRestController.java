@@ -79,7 +79,7 @@ public class EmptyRestController {
                 throw new CompletionException(e);
             }
             if (combinedResult != null) {
-                log.info(">>>>> OK = {}", combinedResult.getBody().getUser().getId());
+                log.info(">>>>> OK = {}", requireNonNull(combinedResult.getBody()).getUser().getId());
             }
             return combinedResult;
         });
