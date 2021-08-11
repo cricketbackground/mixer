@@ -13,7 +13,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(value = FeignException.NotFound.class)
     public ResponseEntity<BaseResponse> handleCompletionException(FeignException.NotFound ex) {
-        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        return errorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(value = InternalServerError.class)
