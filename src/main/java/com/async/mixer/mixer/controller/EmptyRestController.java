@@ -62,26 +62,26 @@ public class EmptyRestController {
 
     @GetMapping(path = "async/mixed")
     public CompletableFuture<ResponseEntity<Mixed>> mixedAsync() {
-        return getUser().thenCombine(getPosts(),
-                (userResponseEntity, postsResponseEntity) -> {
+        return getUser().thenCombine(getPosts(), (userResponseEntity, postsResponseEntity) -> {
                     Mixed mixed = new Mixed();
                     mixed.setUser(userResponseEntity.getBody());
                     mixed.setPosts(postsResponseEntity.getBody());
                     return ResponseEntity.ok(mixed);
-                }).thenCombine(getComments(), (mixedResponseEntity, commentsResponseEntity) -> {
-            Mixed mixed = mixedResponseEntity.getBody();
-            requireNonNull(mixed).setComments(commentsResponseEntity.getBody());
-            return ResponseEntity.ok(mixed);
-        }).handle((combinedResult, e) -> {
-            if (e != null) {
-                log.info(">>>>> Error = {}", e.getMessage(), e);
-                // This is needed for controller advice to kick-in
-                throw new CompletionException(e);
-            }
-            if (combinedResult != null) {
-                log.info(">>>>> OK = {}", requireNonNull(combinedResult.getBody()).getUser().getId());
-            }
-            return combinedResult;
-        });
+                })
+                .thenCombine(getComments(), (mixedResponseEntity, commentsResponseEntity) -> {
+                    Mixed mixed = mixedResponseEntity.getBody();
+                    requireNonNull(mixed).setComments(commentsResponseEntity.getBody());
+                    return ResponseEntity.ok(mixed);
+                }).handle((combinedResult, e) -> {
+                    if (e != null) {
+                        log.info(">>>>> Error = {}", e.getMessage(), e);
+                        // This is needed for controller advice to kick-in
+                        throw new CompletionException(e);
+                    }
+                    if (combinedResult != null) {
+                        log.info(">>>>> OK = {}", requireNonNull(combinedResult.getBody()).getUser().getId());
+                    }
+                    return combinedResult;
+                });
     }
 }
