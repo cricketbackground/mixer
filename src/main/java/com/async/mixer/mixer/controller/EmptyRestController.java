@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -74,6 +75,8 @@ public class EmptyRestController {
         }).handle((combinedResult, e) -> {
             if (e != null) {
                 log.info(">>>>> Error = {}", e.getMessage(), e);
+                // This is needed for controller advice to kick-in
+                throw new CompletionException(e);
             }
             if (combinedResult != null) {
                 log.info(">>>>> OK = {}", combinedResult.getBody().getUser().getId());
