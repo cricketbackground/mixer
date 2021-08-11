@@ -76,20 +76,12 @@ public class EmptyRestControllerV1 {
             if (e != null) {
                 log.info(">>>>> Error = {}", e.getMessage(), e);
                 // This is needed for controller advice to kick-in
-                propagateToControllerAdvice(e);
+                throw new CompletionException(e);
             }
             if (combinedResult != null) {
                 log.info(">>>>> OK = {}", combinedResult.getBody().getUser().getId());
             }
             return combinedResult;
         });
-    }
-
-    private void propagateToControllerAdvice(Throwable e) {
-        try {
-            throw e;
-        } catch (Throwable ex) {
-            throw new CompletionException(ex);
-        }
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @FeignClient(name = "commentsClient", url = "https://jsonplaceholder.typicode.com/")
 public interface CommentsFeignClient {
 
-    @GetMapping(path = "posts/1/comments")
+    @GetMapping(path = "posts/1/commentsZZZ")
     List<Comment> getComments();
 
 }

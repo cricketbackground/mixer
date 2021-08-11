@@ -1,24 +1,19 @@
 package com.async.mixer.mixer.advice;
 
-import com.async.mixer.mixer.exception.InternalServerError;
 import com.async.mixer.mixer.model.BaseResponse;
-import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.concurrent.CompletionException;
+
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(value = FeignException.NotFound.class)
-    public ResponseEntity<BaseResponse> handleCompletionException(FeignException.NotFound ex) {
-        return errorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(value = InternalServerError.class)
-    public ResponseEntity<BaseResponse> handleCompletionException(InternalServerError ex) {
-        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    @ExceptionHandler(value = CompletionException.class)
+    public ResponseEntity<BaseResponse> handleCompletionException(CompletionException e) {
+        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     private ResponseEntity<BaseResponse> errorResponse(HttpStatus status, String message) {
