@@ -4,6 +4,7 @@ import com.async.mixer.mixer.feignclients.CommentsFeignClient;
 import com.async.mixer.mixer.feignclients.PostsFeignClient;
 import com.async.mixer.mixer.feignclients.UserFeignClient;
 import com.async.mixer.mixer.model.Comment;
+import com.async.mixer.mixer.model.Mixed;
 import com.async.mixer.mixer.model.Post;
 import com.async.mixer.mixer.model.User;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,17 @@ public class EmptyRestController {
     public CompletableFuture<ResponseEntity<List<Comment>>> getComments() {
         return CompletableFuture.supplyAsync(() ->
                 ResponseEntity.ok(commentsFeignClient.getComments()));
+    }
+
+    @GetMapping(path = "sync/mixed")
+    public ResponseEntity<Mixed> mixed() {
+        User user = userFeignClient.getUser();
+        List<Post> posts = postsFeignClient.getPosts();
+        List<Comment> comments = commentsFeignClient.getComments();
+        Mixed mixed = new Mixed();
+        mixed.setUser(user);
+        mixed.setPosts(posts);
+        mixed.setComments(comments);
+        return ResponseEntity.ok(mixed);
     }
 }
