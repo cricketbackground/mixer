@@ -8,6 +8,7 @@ import com.async.mixer.mixer.model.Mixed;
 import com.async.mixer.mixer.model.Post;
 import com.async.mixer.mixer.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import static java.util.Objects.requireNonNull;
 @RestController
 @RequestMapping(path = "api")
 @RequiredArgsConstructor
+@Slf4j
 public class EmptyRestController {
 
     private final UserFeignClient userFeignClient;
@@ -69,6 +71,14 @@ public class EmptyRestController {
             Mixed mixed = mixedResponseEntity.getBody();
             requireNonNull(mixed).setComments(commentsResponseEntity.getBody());
             return ResponseEntity.ok(mixed);
+        }).handle((combinedResult, e) -> {
+            if (e != null) {
+                log.info(">>>>> Error = {}", e.getMessage(), e);
+            }
+            if (combinedResult != null) {
+                log.info(">>>>> OK = {}", combinedResult.getBody().getUser().getId());
+            }
+            return combinedResult;
         });
     }
 }
