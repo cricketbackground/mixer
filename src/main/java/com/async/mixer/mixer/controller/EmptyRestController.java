@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
+
 @RestController
 @RequestMapping(path = "api")
 @RequiredArgsConstructor
@@ -53,5 +55,20 @@ public class EmptyRestController {
         mixed.setPosts(posts);
         mixed.setComments(comments);
         return ResponseEntity.ok(mixed);
+    }
+
+    @GetMapping(path = "async/mixed")
+    public CompletableFuture<ResponseEntity<Mixed>> mixedAsync() {
+        return getUser().thenCombine(getPosts(),
+                (userResponseEntity, postsResponseEntity) -> {
+                    Mixed mixed = new Mixed();
+                    mixed.setUser(userResponseEntity.getBody());
+                    mixed.setPosts(postsResponseEntity.getBody());
+                    return ResponseEntity.ok(mixed);
+                }).thenCombine(getComments(), (mixedResponseEntity, commentsResponseEntity) -> {
+            Mixed mixed = mixedResponseEntity.getBody();
+            requireNonNull(mixed).setComments(commentsResponseEntity.getBody());
+            return ResponseEntity.ok(mixed);
+        });
     }
 }
